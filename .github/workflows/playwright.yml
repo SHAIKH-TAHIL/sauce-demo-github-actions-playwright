@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       browser:
-        description: 'Browser to run on'
+        description: 'Select Browser (to trigger the tests on)'
         required: true
         default: 'chromium'
         type: choice
@@ -15,6 +15,14 @@ on:
         - chromium
         - firefox
         - webkit
+    
+      module:
+        description: 'Select the test script to run'
+        type: choice
+        options:
+        - loginWorkflow.spec.ts
+        - demoPath.spec.ts
+      
 jobs:
   test:
     timeout-minutes: 60
@@ -29,7 +37,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test --project=${{ inputs.browser }}
+      run: npx playwright test --project=${{ inputs.browser }} ${{ inputs.module }}
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
